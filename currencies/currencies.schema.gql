@@ -1,0 +1,8 @@
+type CurrencyValue {
+  currency: Currency
+  amount: Float
+}
+
+type Query {
+  convertAmount(amount: Float!, from: Currency!): [CurrencyValue!]!
+}

@@ -1,0 +1,8 @@
+type CountsOnlineAndProducts {
+  countOnline: Int!
+  countProducts: Int!
+}
+
+type Query {
+  getCountsOnlineAndProducts: CountsOnlineAndProducts
+}

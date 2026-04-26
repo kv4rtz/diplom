@@ -1,0 +1,4 @@
+input PageInfo {
+  page: NonNegativeInt = 1
+  limit: NonNegativeInt = 20
+}

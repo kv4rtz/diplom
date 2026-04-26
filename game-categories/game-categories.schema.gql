@@ -1,0 +1,231 @@
+type GameCategory {
+  id: Int!
+  translations: [GameCategoryTranslation]
+  slug: String!
+  visible: Boolean!
+  gameId: Int
+  game: Game
+  globalCategoryId: Int
+  globalCategory: GlobalCategory
+  allowScreenshotsInProduct: Boolean
+  productsQuantityByUser: Float
+  minOrderPrice: Float
+  possiblePercentage: Float
+  commentForBuyer: String
+  sellerVerifiedPhone: Boolean
+  sellerVerfiedIdentity: Boolean
+  countMyProducts: Int
+  countProducts: Int
+  name: String
+  options: [GameCategoryOption!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+enum SuggestedGameCategoryStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+type SuggestedGameCategory {
+  id: Int!
+  game: Game!
+  name: String!
+  comment: String
+  user: User!
+  status: SuggestedGameCategoryStatus
+}
+
+type GameCategoryTranslation {
+  locale: Locale
+  label: String
+}
+
+enum GameOptionType {
+  tab
+  select
+  range
+}
+
+type GameCategoryOption {
+  id: Int!
+  name: String!
+  type: GameOptionType!
+  isRequired: Boolean!
+  values: [GameCategoryOptionValue!]
+  translations: [GameCategoryOptionTranslation]
+  rangeMin: Int
+  rangeMax: Int
+}
+
+type GameCategoryOptionTranslation {
+  locale: Locale
+  name: String
+}
+
+type GameCategoryOptionValue {
+  id: Int!
+  name: String!
+  translations: [GameCategoryOptionValueTranslation]
+}
+
+type GameCategoryOptionValueTranslation {
+  locale: Locale
+  name: String
+}
+
+type PaginatedGameCategories implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [GameCategory!]!
+}
+
+input GameCategoryTranslationInput {
+  locale: Locale!
+  label: String!
+}
+
+input GameCategoryOptionInput {
+  type: GameOptionType!
+  isRequired: Boolean!
+  values: [GameCategoryOptionValuesInput!]
+  rangeMin: Int
+  rangeMax: Int
+  translations: [GameCategoryOptionTranslationInput!]!
+}
+
+input GameCategoryOptionValuesInput {
+  translations: [GameCategoryOptionValueInput!]!
+}
+
+input GameCategoryOptionValueInput {
+  locale: Locale!
+  name: String!
+}
+
+input GameCategoryOptionTranslationInput {
+  locale: Locale!
+  name: String!
+}
+
+type PaginatedGameCategories implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [GameCategory!]!
+}
+
+type PaginatedAdminGameCategories implements Pagination {
+  pages: Int!
+  count: Int!
+  globalCategories: [GlobalCategory!]!
+  rows: [GameCategory!]!
+}
+
+type PaginatedSuggestedGameCategories implements Pagination {
+  pages: Int!
+  count: Int!
+  games: [Game]
+  rows: [SuggestedGameCategory!]!
+}
+
+type Query {
+  gameCategories(
+    pageInfo: PageInfo
+    gameId: UnsignedInt
+    order: String = "createdAt_desc"
+    search: String
+    showHidden: Boolean = false
+  ): PaginatedGameCategories
+
+  adminGameCategories(
+    pageInfo: PageInfo
+    allowScreenshotsInProduct: Boolean
+    sellerVerifiedPhone: Boolean
+    sellerVerfiedIdentity: Boolean
+    gameId: UnsignedInt
+    globalCategoryId: UnsignedInt
+    visible: Boolean
+    search: String
+    order: String = "createdAt_desc"
+    showHidden: Boolean = false
+  ): PaginatedAdminGameCategories
+
+  gameCategory(id: ID!): GameCategory
+
+  suggestedGameCategories(
+    pageInfo: PageInfo
+    search: String
+    gameId: Int
+    status: SuggestedGameCategoryStatus
+    order: String
+  ): PaginatedSuggestedGameCategories
+}
+
+type Mutation {
+  createGameCategory(
+    gameId: UnsignedInt!
+    translations: [GameCategoryTranslationInput!]!
+    options: [GameCategoryOptionInput!]!
+    productsQuantityByUser: Float!
+    minOrderPrice: Float!
+    possiblePercentage: Float!
+    sellerVerifiedPhone: Boolean!
+    sellerVerfiedIdentity: Boolean!
+    allowScreenshotsInProduct: Boolean!
+    commentForBuyer: String
+    discountForBalancePayment: Float
+    globalCategoryId: UnsignedInt
+    visible: Boolean = true
+  ): GameCategory
+
+  updateGameCategory(
+    id: UnsignedInt!
+    gameId: UnsignedInt
+    translations: [GameCategoryTranslationInput!]
+    productsQuantityByUser: Float
+    minOrderPrice: Float
+    possiblePercentage: Float
+    commentForBuyer: String
+    sellerVerifiedPhone: Boolean
+    discountForBalancePayment: Float
+    sellerVerfiedIdentity: Boolean
+    allowScreenshotsInProduct: Boolean
+    globalCategoryId: UnsignedInt
+    visible: Boolean
+  ): GameCategory
+
+  addGameCategoryOption(
+    gameCategoryId: UnsignedInt!
+    type: GameOptionType!
+    isRequired: Boolean!
+    translations: [GameCategoryOptionTranslationInput!]!
+    values: [GameCategoryOptionValuesInput!]
+    rangeMin: Int
+    rangeMax: Int
+  ): GameCategoryOption
+
+  updateGameCategoryOption(
+    id: UnsignedInt!
+    type: GameOptionType
+    isRequired: Boolean
+    values: [GameCategoryOptionValuesInput!]
+    rangeMin: Int
+    rangeMax: Int
+    translations: [GameCategoryOptionTranslationInput!]
+  ): GameCategoryOption
+
+  deleteGameCategoryOption(id: UnsignedInt!): Boolean!
+
+  deleteGameCategory(id: UnsignedInt!): Boolean!
+
+  createSuggestedGameCategory(
+    gameId: Int!
+    name: String!
+    comment: String
+  ): SuggestedGameCategory!
+
+  approveSuggestedGameCategory(id: Int!): SuggestedGameCategory!
+  rejectSuggestedGameCategory(id: Int!): SuggestedGameCategory!
+}

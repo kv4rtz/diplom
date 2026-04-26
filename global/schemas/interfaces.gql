@@ -1,0 +1,4 @@
+interface Pagination {
+  pages: Int!
+  count: Int!
+}

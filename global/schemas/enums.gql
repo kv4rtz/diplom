@@ -1,0 +1,16 @@
+enum Locale {
+  ru
+  en
+  de
+}
+
+enum Currency {
+  RUB
+  USD
+  EUR
+}
+
+enum OrderDirection {
+  ASC
+  DESC
+}

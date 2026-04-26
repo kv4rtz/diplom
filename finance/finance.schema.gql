@@ -1,0 +1,11 @@
+type Finance {
+  user: User!
+  rub: Float!
+  usd: Float!
+  eur: Float!
+  bonuses: Float!
+}
+
+type Query {
+  getMyFinance: Finance!
+}

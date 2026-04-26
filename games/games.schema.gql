@@ -1,0 +1,110 @@
+type Game {
+  id: ID!
+  slug: String!
+  visible: Boolean!
+  name: String
+  description: String
+  translations: [GameTranslation!]
+  type: GameType!
+  iconKey: String
+  icon: String
+  bannerKey: String
+  banner: String
+  gameCategories(
+    orderGameCategories: String
+    orderDirectionByProductsQuantity: OrderDirection
+  ): [GameCategory!]
+  countGameCategories: Int!
+  countProducts: Int!
+  hideMainSection: Boolean!
+  haveChat: Boolean!
+  isFavourite: Boolean
+  searches: [String]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type GameTranslation {
+  locale: Locale!
+  name: String!
+  description: String!
+}
+
+type PaginatedGames implements Pagination {
+  pages: Int!
+  count: Int!
+  gameCount: Int
+  mobileGameCount: Int
+  applicationCount: Int
+  rows: [Game!]!
+}
+
+enum GameType {
+  game
+  mobile_game
+  application
+}
+
+type Query {
+  games(
+    pageInfo: PageInfo
+    search: String
+    globalCategoryId: Int
+    isFavourite: Boolean
+    type: GameType
+    order: String = "createdAt_DESC"
+    showHidden: Boolean = false
+    showWithoutGameCategories: Boolean = false
+  ): PaginatedGames
+
+  adminGames(
+    pageInfo: PageInfo
+    search: String
+    globalCategoryId: Int
+    isFavourite: Boolean
+    type: GameType
+    visible: Boolean
+    haveChat: Boolean
+    order: String = "createdAt_DESC"
+    showHidden: Boolean = false
+    showWithoutGameCategories: Boolean = false
+  ): PaginatedGames
+  similarFourGames(id: ID!): [Game!]
+  game(id: ID!): Game
+}
+
+input GameTranslationInput {
+  locale: Locale!
+  name: String!
+  description: String!
+}
+
+type Mutation {
+  createGame(
+    translations: [GameTranslationInput!]!
+    type: GameType!
+    iconKey: String!
+    bannerKey: String!
+    hideMainSection: Boolean = false
+    haveChat: Boolean = false
+    visible: Boolean = true
+    searches: [String!]
+  ): Game!
+
+  updateGame(
+    id: ID!
+    translations: [GameTranslationInput!]
+    visible: Boolean
+    type: GameType
+    iconKey: String
+    bannerKey: String
+    hideMainSection: Boolean
+    haveChat: Boolean
+    searches: [String!]
+  ): Game!
+
+  deleteGame(id: ID!): Boolean!
+
+  addGameToFavourite(gameId: Int!): Boolean!
+  removeGameFromFavourite(gameId: Int!): Boolean!
+}

@@ -1,0 +1,66 @@
+type GlobalCategory {
+  id: ID!
+  name: String
+  description: String
+  translations: [GlobalCategoryTranslation!]
+  slug: String!
+  visible: Boolean!
+  type: GlobalCategoryType!
+  countGameCategories: Int!
+  games: [Game!]!
+  products: [Product!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+enum GlobalCategoryType {
+  products
+  services
+}
+
+input GlobalCategoryTranslationInput {
+  locale: Locale!
+  name: String!
+  description: String!
+}
+
+type GlobalCategoryTranslation {
+  locale: Locale!
+  name: String!
+  description: String!
+}
+
+type PaginatedGlobalCategories implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [GlobalCategory!]!
+}
+
+type Query {
+  globalCategories(
+    pageInfo: PageInfo
+    order: String
+    search: String
+    type: GlobalCategoryType
+    showHidden: Boolean = false
+  ): PaginatedGlobalCategories
+  globalCategory(id: ID!): GlobalCategory
+}
+
+type Mutation {
+  createGlobalCategory(
+    translations: [GlobalCategoryTranslationInput!]!
+    visible: Boolean = true
+    type: GlobalCategoryType
+  ): GlobalCategory!
+
+  updateGlobalCategory(
+    id: ID!
+    translations: [GlobalCategoryTranslationInput!]
+    visible: Boolean
+    type: GlobalCategoryType
+  ): GlobalCategory!
+
+  deleteGlobalCategory(id: ID!): Boolean!
+}
