@@ -1,0 +1,14 @@
+type UploadUrl {
+  uploadUrl: String!
+  fileKey: String!
+}
+
+input UploadInput {
+  mimeType: String!
+  bucket: String!
+}
+
+type Mutation {
+  getUploadUrl(mimeType: String!, bucket: String!): UploadUrl
+  getUploadUrls(uploads: [UploadInput!]!): [UploadUrl]
+}

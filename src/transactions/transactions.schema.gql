@@ -1,0 +1,59 @@
+type Transaction {
+  id: ID!
+  finance: Finance!
+  order: Order
+  amount: Float!
+  currency: Currency!
+  type: TransactionType!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+enum TransactionType {
+  REPLENISHMENT
+  WITHDRAWAL
+  DEDUCTION
+  REFUND
+}
+
+type PaginatedTransactions implements Pagination {
+  pages: Int!
+  count: Int!
+  paymentMethods: [String!]!
+  rows: [Transaction!]!
+}
+
+enum WithdrawalRublesMethods {
+  bank_card
+  sbp
+  yoo_money
+}
+
+type Query {
+  myTransactions(
+    pageInfo: PageInfo
+    onlyPurchases: Boolean
+    onlySales: Boolean
+    orderStatus: OrderStatus
+    order: String
+    gameId: Int
+    gameCategoryId: Int
+    searchByLoginOrOrderId: String
+    paymentMethod: String
+    type: TransactionType
+  ): PaginatedTransactions!
+}
+
+type Mutation {
+  withdrawalRubles(
+    type: WithdrawalRublesMethods!
+    amount: Float!
+    cardNumber: String
+    bankId: String
+    phone: String
+    accountNumber: String
+    isInstant: Boolean
+  ): Boolean!
+  getReplenishAccountYooKassaUrl(amount: Float!, buyProductId: Int): String!
+  buyProductFromBalance(productId: Int!): Order!
+}

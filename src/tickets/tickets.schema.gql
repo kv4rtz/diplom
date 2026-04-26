@@ -1,0 +1,87 @@
+type Ticket {
+  id: Int!
+  topic: TicketTopic!
+  topicCategory: TicketTopicCategory!
+  comment: String
+  images: [String]
+  status: TicketStatus!
+  author: User!
+  employee: User
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum TicketStatus {
+  WAITING
+  OPEN
+  RESOLVED
+}
+
+enum TicketTopic {
+  PROBLEM_WITH_ORDER
+  OTHER
+}
+
+enum TicketTopicCategory {
+  DONT_GIVE_PRODUCT
+}
+
+type TicketMessage {
+  user: User!
+  text: String!
+  files: [String]
+}
+
+type PaginatedTickets implements Pagination {
+  count: Int!
+  pages: Int!
+  countOpened: Int!
+  countResolved: Int!
+  rows: [Ticket!]!
+}
+
+type PaginatedTicketMessages implements Pagination {
+  count: Int!
+  pages: Int!
+  rows: [TicketMessage!]!
+}
+
+type Query {
+  tickets(
+    pageInfo: PageInfo
+    status: TicketStatus
+    topic: TicketTopic
+    topicCategory: TicketTopicCategory
+    order: String
+  ): PaginatedTickets!
+
+  myTickets(
+    pageInfo: PageInfo
+    status: TicketStatus
+    topic: TicketTopic
+    topicCategory: TicketTopicCategory
+    order: String
+  ): PaginatedTickets!
+
+  ticket(ticketId: Int!): Ticket!
+  ticketMessages(ticketId: Int!, pageInfo: PageInfo): PaginatedTicketMessages!
+}
+
+type Mutation {
+  createTicket(
+    topic: TicketTopic!
+    topicCategory: TicketTopicCategory!
+    comment: String
+    imagesKeys: [String]
+    notifyAboutResolveByEmail: Boolean = false
+  ): Ticket!
+
+  createTicketMessage(
+    ticketId: Int!
+    text: String!
+    filesKeys: [String]
+  ): TicketMessage!
+
+  takeTicket(ticketId: Int!): Boolean!
+  resolveTicket(ticketId: Int!): Boolean!
+}

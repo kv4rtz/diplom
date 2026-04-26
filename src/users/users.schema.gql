@@ -1,0 +1,201 @@
+type BgrHistory {
+  date: DateTime
+  bgr: Float
+}
+
+type User {
+  id: ID!
+  login: String
+  email: String
+  roles: [Role]
+  phone: String
+  verified: Boolean
+  verifiedIdentity: Boolean
+  avatarKey: String
+  avatar: String
+  selectedLocale: Locale
+  selectedCurrency: Currency
+  isOnline: Boolean
+  activeFinanceAmount: Float
+  countProducts: Int
+  countReviews: Int
+  countReviewsForLastYear: Int
+  averageRating: Float
+  bgr: Float
+  bgrHistory: [BgrHistory]
+  bgrRank: Int
+  buyerPurchasesRank: Int
+  averageSumOfSales: Float
+  quantityOfSalesForLast14Days: Int
+  averageSumOfSalesForLast14Days: Float
+  percentOfSuccessOrdersForLast14Days: Float
+  quantityOfSales: Int
+  percentOfSuccessOrders: Float
+  quantityOfPurchases: Int
+  quantityOfPurchasesForLast14Days: Int
+  averageSumOfPurchases: Float
+  averageSumOfPurchasesForLast14Days: Float
+  percentOfSuccessPurchases: Float
+  percentOfSuccessPurchasesForLast14Days: Float
+  securityDeposit: Float
+  dateWhenCanBeLiftedProduct: DateTime
+  inYourBlacklist: Boolean
+  selectedTradingOption: UserTradingOption
+  lastSeen: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type PublicProfile {
+  id: ID!
+  login: String
+  roles: [Role]
+  verified: Boolean
+  avatarKey: String
+  avatar: String
+  quantityOfSales: Int
+  percentOfSuccessOrders: Float
+  isOnline: Boolean
+  countReviews: Int
+  countReviewsForLastYear: Int
+  averageRating: Float
+  bgr: Float
+  bgrHistory: [BgrHistory]
+  bgrRank: Int
+  buyerPurchasesRank: Int
+  averageSumOfSales: Float
+  quantityOfSalesForLast14Days: Int
+  averageSumOfSalesForLast14Days: Float
+  percentOfSuccessOrdersForLast14Days: Float
+  quantityOfPurchases: Int
+  quantityOfPurchasesForLast14Days: Int
+  averageSumOfPurchases: Float
+  averageSumOfPurchasesForLast14Days: Float
+  percentOfSuccessPurchases: Float
+  percentOfSuccessPurchasesForLast14Days: Float
+  securityDeposit: Float
+  inYourBlacklist: Boolean
+  lastSeen: DateTime
+  createdAt: DateTime
+  deletedAt: DateTime
+}
+
+type PaginatedBannedAccounts {
+  pages: Int
+  count: Int
+  rows: [User]
+}
+
+enum UserTradingOption {
+  SHOW_ALL_MY_PRODUCTS
+  HIDE_MY_PRODUCTS_IN_FEED
+  HIDE_MY_PRODUCTS_EVERYWHERE
+}
+
+enum UserCodeType {
+  CONFIRM_EMAIL
+  RESET_PASS
+  CHANGE_PASS
+}
+
+enum UserComplaintReason {
+  SPAM
+  ADVERTISEMENT
+  OFFENSIVE_CONTENT
+  DUPLICATE_PRODUCTS
+  INVALID_DESCRIPTION
+  MISLEADING_INFORMATION
+  OTHER
+}
+
+enum ComplaintUserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+type UserComplaint {
+  id: ID!
+  creator: User!
+  target: User!
+  reason: UserComplaintReason!
+  comment: String
+  status: ComplaintUserStatus!
+}
+
+type PaginatedUserComplaints implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [UserComplaint]
+}
+
+type PaginatedUsers implements Pagination {
+  pages: Int!
+  count: Int!
+  roles: [Role]
+  rows: [User]
+}
+
+type VerifyPhoneResult {
+  message: String
+}
+
+type Query {
+  users(
+    pageInfo: PageInfo
+    search: String
+    roleId: Int
+    onlyBuyers: Boolean
+    onlySellers: Boolean
+    onlyStaff: Boolean
+    bgrMin: Int
+    bgrMax: Int
+    order: String
+  ): PaginatedUsers!
+  publicProfile(slug: String!): PublicProfile
+  userComplaints(
+    pageInfo: PageInfo
+    creatorId: Int
+    targetId: Int
+    status: ComplaintUserStatus
+    order: String
+  ): PaginatedUserComplaints!
+  myBlacklist: [PublicProfile!]!
+}
+
+type Mutation {
+  editAccount(
+    login: String
+    avatar: String
+    locale: Locale
+    currency: Currency
+  ): User
+  assignRole(roleId: ID!, userId: ID!): User
+  removeRole(roleId: ID!, userId: ID!): User
+  requestCode(login: String!, type: UserCodeType!): String
+  changePassword(
+    login: String!
+    code: String!
+    password: String!
+    type: UserCodeType!
+  ): Boolean
+  requestCodeForChangeOldPassword(oldPassword: String!): String
+
+  deleteUser(userId: Int!, hardRemove: Boolean = false): Boolean
+
+  createUserComplaint(
+    targetId: Int!
+    reason: UserComplaintReason!
+    comment: String
+  ): UserComplaint
+  approveUserComplaint(id: Int!): Boolean!
+  rejectUserComplaint(id: Int!): Boolean!
+
+  addUserToBlacklist(bannedUserId: Int!): Boolean!
+  removeUserFromBlacklist(bannedUserId: Int!): Boolean!
+
+  setTradingOption(option: UserTradingOption!): Boolean!
+
+  sendCodeForVerifyPhone(phone: String!): VerifyPhoneResult!
+}
