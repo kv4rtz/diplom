@@ -1,0 +1,231 @@
+type Product {
+  id: Int!
+  originalProductId: Int
+  sellerId: Int
+  seller: User
+  slug: String!
+  autoDelivery: Boolean
+  imageKeys: [String]
+  images: [String]
+  gameCategoryId: Int
+  gameCategory: GameCategory
+  price: Float
+  priceWithoutCommission: Float
+  discountForPaymentFromTheBalance: Float
+  options: [ProductOptionValue!]
+  translations: [ProductTranslation]
+  name: String
+  lots: [String]
+  quantity: Int
+  active: Boolean
+  deactiveAfterSell: Boolean
+  description: String
+  views: Int
+  viewsLast14Days: Int
+  isFavourite: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastLiftingAt: DateTime
+}
+
+type ProductTranslation {
+  locale: Locale!
+  name: String
+  description: String
+  messageForBuyer: String
+}
+
+type ProductOptionValue {
+  gameCategoryOptionId: Int!
+  gameCategoryOption: GameCategoryOption!
+  valueString: String
+  value: String!
+}
+
+type PaginatedProducts implements Pagination {
+  pages: Int!
+  count: Int!
+  games: [Game!]!
+  gameCategories: [GameCategory!]!
+  rows: [Product!]!
+}
+
+type PaginatedMyProducts implements Pagination {
+  pages: Int!
+  count: Int!
+  games: [Game!]!
+  gameCategories: [GameCategory!]!
+  rows: [Product!]!
+}
+
+input ProductOptionValueInput {
+  gameCategoryOptionId: UnsignedInt!
+  value: String!
+}
+
+input ProductTranslationInput {
+  locale: Locale!
+  name: String
+  description: String
+  messageForBuyer: String
+}
+
+input ProductFilterOptionInput {
+  gameCategoryOptionId: UnsignedInt!
+  equals: String
+  min: Float
+  max: Float
+}
+
+input ProductPriceFilterInput {
+  min: Float
+  max: Float
+}
+
+type LastViewedProducts {
+  watchingItRightNow: Product
+  watchedThreeProducts: [Product!]!
+}
+
+type ImportedProductsErrors {
+  row: Int!
+  error: String!
+}
+
+type ImportedProducts {
+  createdCount: Int!
+  created: [Int!]!
+  errors: [ImportedProductsErrors!]!
+}
+
+type ProductComplaint {
+  id: Int!
+  product: Product!
+  user: User!
+  reason: ComplaintProductReasons!
+  comment: String
+  status: ComplaintProductStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum ComplaintProductStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ComplaintProductReasons {
+  POOR_QUALITY_PRODUCT
+  ADVERTISEMENT
+  OFFENSIVE_CONTENT
+  DUPLICATE_PRODUCTS
+  INVALID_DESCRIPTION
+  MISLEADING_INFORMATION
+  OTHER
+}
+
+type PaginatedProductComplaints implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [ProductComplaint!]!
+}
+
+type Query {
+  myProducts(
+    pageInfo: PageInfo
+    autoDelivery: Boolean
+    hasReviews: Boolean
+    sellerOnline: Boolean
+    search: String
+    filters: [ProductFilterOptionInput!]
+    priceFilter: ProductPriceFilterInput
+    gameId: Int
+    firstOrderBy: String
+    secondOrderBy: String
+    active: Boolean
+    gameCategoryId: Int
+    globalCategoryId: Int
+    mostViewedFirst: Boolean
+  ): PaginatedMyProducts
+  products(
+    pageInfo: PageInfo
+    autoDelivery: Boolean
+    hasReviews: Boolean
+    sellerOnline: Boolean
+    search: String
+    filters: [ProductFilterOptionInput!]
+    priceFilter: ProductPriceFilterInput
+    sellerId: Int
+    gameId: Int
+    firstOrderBy: String
+    secondOrderBy: String
+    active: Boolean
+    gameCategoryId: Int
+    globalCategoryId: Int
+    isFavourite: Boolean
+    mostViewedFirst: Boolean
+  ): PaginatedProducts
+  product(id: UnsignedInt!): Product
+
+  lastViewedMyProductsByUserId(userId: Int!): LastViewedProducts!
+
+  productComplaints(
+    pageInfo: PageInfo
+    productId: UnsignedInt
+    status: ComplaintProductStatus
+    userId: UnsignedInt
+    sellerId: UnsignedInt
+    order: String
+  ): PaginatedProductComplaints!
+}
+
+type Mutation {
+  createProduct(
+    gameCategoryId: UnsignedInt!
+    price: Float!
+    autoDelivery: Boolean!
+    options: [ProductOptionValueInput!]!
+    translations: [ProductTranslationInput!]!
+    images: [String!]
+    lots: [String!]
+    quantity: Int
+    active: Boolean
+    deactiveAfterSell: Boolean
+  ): Product
+
+  updateProduct(
+    id: UnsignedInt!
+    gameCategoryId: UnsignedInt
+    price: Float
+    autoDelivery: Boolean
+    options: [ProductOptionValueInput!]
+    translations: [ProductTranslationInput!]
+    images: [String!]
+    lots: [String!]
+    quantity: Int
+    active: Boolean
+    deactiveAfterSell: Boolean
+  ): Product
+
+  deleteProduct(id: ID!): Boolean!
+
+  copyProduct(id: UnsignedInt!): Product
+
+  liftMyProduct(ids: [Int!]!): [Int!]!
+
+  importProducts(fileKey: String!): ImportedProducts!
+  exportProducts(ids: [Int!]!): String!
+
+  addProductToFavourites(productId: Int!): Boolean!
+  removeProductFromFavourites(productId: Int!): Boolean!
+
+  createComplaintProduct(
+    productId: Int!
+    reason: ComplaintProductReasons!
+    comment: String
+  ): Boolean!
+
+  approveProductComplaint(id: Int!): Boolean!
+  rejectProductComplaint(id: Int!): Boolean!
+}

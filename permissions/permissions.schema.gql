@@ -1,0 +1,12 @@
+type Permission {
+  id: ID!
+  name: String!
+  code: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Query {
+  permissions: [Permission]
+  permission(id: ID!): Permission
+}

@@ -1,0 +1,90 @@
+type Review {
+  id: Int!
+  type: ReviewType!
+  rating: Float
+  speedRating: Int
+  qualityRating: Int
+  accordanceRating: Int
+  communicationRating: Int
+  recommendationRating: Int
+  generalRating: Int
+  text: String!
+  userId: Int
+  user: User
+  productId: Int
+  product: Product
+  orderId: String
+  order: Order
+  reviewId: Int
+  replyTo: Review
+  sellerAnswer: Review
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+enum ReviewType {
+  TO_SELLER
+  TO_PLATFORM
+  TO_REVIEWER
+}
+
+type PaginatedReviews {
+  count: Int
+  pages: Int
+  ratings: Ratings
+  games: [Game]
+  gameCategories: [GameCategory]
+  rows: [Review]
+}
+
+type Ratings {
+  five: Int
+  four: Int
+  three: Int
+  two: Int
+  one: Int
+}
+
+type Query {
+  reviews(
+    pageInfo: PageInfo
+    sellerId: Int
+    productId: Int
+    type: ReviewType
+    score: Int
+    gameId: Int
+    gameCategoryId: Int
+    order: String
+  ): PaginatedReviews
+}
+
+type Mutation {
+  createReview(
+    type: ReviewType!
+    speedRating: Int!
+    qualityRating: Int!
+    accordanceRating: Int!
+    communicationRating: Int!
+    recommendationRating: Int!
+    generalRating: Int!
+    text: String!
+    productId: Int
+    orderId: String
+  ): Review
+
+  updateReview(
+    id: Int!
+    speedRating: Int!
+    qualityRating: Int!
+    accordanceRating: Int!
+    communicationRating: Int!
+    recommendationRating: Int!
+    generalRating: Int!
+    text: String!
+  ): Review
+
+  deleteReview(id: Int!): Boolean
+
+  createAnswerToReview(reviewId: Int!, text: String!): Review
+  updateAnswerToReview(id: Int!, text: String!): Review
+}

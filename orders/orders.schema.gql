@@ -1,0 +1,75 @@
+type Order {
+  id: String!
+  price: Float!
+  currency: Currency!
+  review: Review
+  productSnapshot: OrderProductSnapshot!
+  productLot: String
+  buyer: User!
+  paymentMethod: String!
+  status: OrderStatus!
+  isPriority: Boolean!
+  isProblematic: Boolean!
+  isAlreadyReopened: Boolean!
+  waitToReopen: Boolean!
+  createdAt: DateTime!
+}
+
+type OrderProductSnapshot {
+  order: Order!
+  originalProduct: Product!
+  gameCategory: GameCategory!
+  seller: User!
+  slug: String!
+  price: Float
+  currency: Currency!
+  autoDelivery: Boolean!
+  active: Boolean!
+  deactiveAfterSell: Boolean!
+  quantity: Int!
+  name: String!
+  description: String!
+  messageForBuyer: String
+  options: [ProductOptionValue!]
+  translations: [ProductTranslation]
+  images: [String]
+}
+
+enum OrderStatus {
+  PENDING
+  REFUNDED
+  COMPLETED
+  REOPENED
+}
+
+type PaginatedOrders implements Pagination {
+  pages: Int!
+  count: Int!
+  paymentMethods: [String!]!
+  games: [Game!]!
+  rows: [Order!]!
+}
+
+type Query {
+  myOrders(
+    pageInfo: PageInfo
+    onlySales: Boolean
+    gameId: Int
+    gameCategoryId: Int
+    orderStatus: OrderStatus
+    paymentMethod: String
+    searchByLoginOrOrderId: String
+    order: String
+  ): PaginatedOrders!
+
+  orderById(orderId: String!): Order!
+}
+
+type Mutation {
+  createOrder(productId: ID!): Order!
+  makeOrderIsCompletedAndSendMoneyToSeller(orderId: String): Order!
+  makeOrderIsProblematic(orderId: ID!): Order!
+  makeOrderIsPriority(orderId: ID!): Order!
+  reopenOrder(orderId: ID!): Order!
+  refundOrder(orderId: ID!): Order!
+}

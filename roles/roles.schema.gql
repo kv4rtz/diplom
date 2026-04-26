@@ -1,0 +1,40 @@
+type Role {
+  id: ID!
+  code: String!
+  name: String!
+  permissions: [Permission]
+  translations: [RoleTranslation]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RoleTranslation {
+  locale: Locale!
+  name: String!
+}
+
+input RoleTranslationInput {
+  locale: Locale!
+  name: String!
+}
+
+type Query {
+  roles: [Role]
+  role(id: ID!): Role
+}
+
+type Mutation {
+  becomeSeller(approval: Boolean!): Boolean!
+  createRole(
+    code: String!
+    translations: [RoleTranslationInput!]!
+    permissions: [ID!]
+  ): Role!
+  updateRole(
+    id: ID!
+    code: String
+    translations: [RoleTranslationInput!]
+    permissions: [ID!]
+  ): Role!
+  deleteRole(id: ID!): Boolean!
+}

@@ -1,0 +1,55 @@
+type Message {
+  id: UnsignedInt
+  type: MessageType
+  text: String
+  metadata: JSON
+  userId: Int
+  user: User
+  isSystem: Boolean
+  product: Product
+  files: [String]
+  readedAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+enum MessageType {
+  TEXT
+  AUTOREPLY
+  ORDER_PAID
+  ORDER_CONFIRMED_ADMIN
+  ORDER_REOPENED
+  VOICE_INVITE
+  VOICE_ENTER
+  VOICE_SELLER_JOINED
+  VOICE_FINISHED
+  REFUND_CHECK
+  ORDER_CONFIRMED_BUYER
+  REVIEW_CREATED
+  REVIEW_DELETED
+  REVIEW_REPLY_ADDED
+  REVIEW_REPLY_DELETED
+  REFUND_APPROVED
+  REFUND_DELAYED
+
+  SYSTEM_TICKET_NEW_ANSWER
+  SYSTEM_TICKET_IS_RESOLVED
+}
+
+type PaginatedMessages implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [Message]!
+}
+
+type Query {
+  chatMessages(chatId: UnsignedInt!, pageInfo: PageInfo): PaginatedMessages!
+}
+
+type Mutation {
+  createMessage(chatId: UnsignedInt!, text: String!, files: [String]): Message!
+  updateMessage(id: UnsignedInt!, text: String, files: [String]): Message!
+  deleteMessage(id: UnsignedInt!): Boolean!
+
+  markMessageAsRead(id: UnsignedInt!): Boolean!
+}
