@@ -1,0 +1,42 @@
+type Chat {
+  id: UnsignedInt!
+  name: String
+  members: [ChatMember]!
+  lastMessage: Message
+  newMessageCount: Int
+  pinned: Boolean
+  notify: Boolean
+  isSystem: Boolean
+}
+
+enum ChatMemberRoles {
+  admin
+  member
+}
+
+type ChatMember {
+  role: ChatMemberRoles
+  userId: Int
+  user: User
+}
+
+type PaginatedChats implements Pagination {
+  pages: Int!
+  count: Int!
+  rows: [Chat!]!
+}
+
+type Query {
+  allNewMessageCount: Int
+  myChats(pageInfo: PageInfo): PaginatedChats!
+  checkExistsChatWithUser(memberId: UnsignedInt!): Boolean!
+  chatById(id: UnsignedInt!): Chat!
+  chatByMemberId(memberId: UnsignedInt!): Chat!
+}
+
+type Mutation {
+  callMember(memberId: UnsignedInt!): Boolean!
+  createChat(member: UnsignedInt!, name: String): Chat!
+  toggleChatNotification(chatId: UnsignedInt!): Boolean!
+  toggleChatCursor(chatId: UnsignedInt!): Boolean!
+}

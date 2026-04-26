@@ -1,0 +1,38 @@
+type Achievement {
+  id: ID!
+  type: AchievementType!
+  code: String!
+  title: String!
+  description: String!
+  translations: [AchievementTranslation!]!
+  icon: String!
+  percentageOfUsers: Float!
+  having: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type AchievementTranslation {
+  locale: Locale!
+  title: String!
+  description: String!
+}
+
+enum AchievementType {
+  MEMORABLE
+  MILESTONES
+  EPIC
+  SPECIAL
+}
+
+type Query {
+  achievements(
+    type: AchievementType
+    userId: Int
+    onlyPinned: Boolean
+  ): [Achievement!]!
+}
+
+type Mutation {
+  pinMyAchievement(achievementId: Int!, position: Int!): Boolean!
+}

@@ -1,0 +1,33 @@
+type Commission {
+  id: Int!
+  uniqueId: String!
+  percentage: Float!
+  type: ComissionType!
+  currency: Currency
+  method: String!
+  translations: [ComissionTranslation!]!
+}
+
+type ComissionTranslation {
+  locale: Locale!
+  method: String!
+}
+
+enum ComissionType {
+  REPLENISHMENT
+  WITHDRAWAL
+}
+
+type CostCalculated {
+  commission: Commission!
+  amount: Float!
+}
+
+type Query {
+  commissions: [Commission!]!
+  calculateCost(amount: Float!, type: ComissionType!): [CostCalculated!]!
+}
+
+type Mutation {
+  updateComission(comissionId: Int!, percentage: Float!): Commission!
+}

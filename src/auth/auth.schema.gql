@@ -1,0 +1,42 @@
+type Tokens {
+  user: User
+  tempTokenForTwoFactor: String
+  accessToken: String
+  refreshToken: String
+}
+
+type Query {
+  viewer: User
+  checkAdminAccess: Boolean
+}
+
+enum OAuthProvider {
+  vk
+  discord
+}
+
+type GenerateTwoFactorResponse {
+  qr: String!
+}
+
+type EnableTwoFactorResponse {
+  backupCodes: [String!]
+}
+
+type Mutation {
+  login(login: String!, password: String!): Tokens
+  loginOAuth(
+    provider: OAuthProvider!
+    code: String!
+    deviceId: String
+    originalPKCE: String
+  ): Tokens
+  logout(refreshToken: String!): Boolean
+  refresh(refreshToken: String!): Tokens
+  registerAccount(email: String!, password: String!): Tokens
+  confirmAccount(email: String!, code: String!): User
+
+  generateTwoFactor(password: String!): GenerateTwoFactorResponse!
+  enableTwoFactor(code: String!): EnableTwoFactorResponse!
+  verifyTwoFactor(tempTokenForTwoFactor: String!, code: String!): Tokens!
+}
